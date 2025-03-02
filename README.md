@@ -4,7 +4,28 @@
 `sirene_server.exe` est un projet Python qui permet de récupérer des données SIREN, de les traiter via des recherches Pappers et LinkedIn, et de les envoyer à une feuille de calcul Google Sheets.
 
 ## Structure du projet
-sirene_server/ ├── config/ │ ├── .env │ └── service_account.json ├── data/ │ └── final_results.csv ├── scripts/ │ ├── run.sh │ └── setup.sh ├── src/ │ ├── fetch_siren.py │ ├── linkedin_search.py │ ├── main.py │ ├── pappers_search.py │ └── to_gsheet.py ├── tests/ │ └── test_main.py ├── .gitignore └── README.md
+
+```
+sirene_server/
+├── config/
+│   ├── .env
+│   └── service_account.json
+├── data/
+│   └── final_results.csv
+├── scripts/
+│   ├── run.sh
+│   └── setup.sh
+├── src/
+│   ├── fetch_siren.py
+│   ├── linkedin_search.py
+│   ├── main.py
+│   ├── pappers_search.py
+│   └── to_gsheet.py
+├── tests/
+│   └── test_main.py
+├── .gitignore
+└── README.md
+```
 
 ## Prérequis
 - Python 3.x
