@@ -1,28 +1,18 @@
-#!/bin/bash
-# This script installs a cron job to run main.py every Monday at 1am.
+# Define the full paths to your Python interpreter (from the virtual environment) and main.py.
+PYTHON_PATH="$(pwd)/venv/bin/python"
+MAIN_PY="$(pwd)/src/main.py"   # Update if your main.py is in a different location
+LOG_FILE="$(pwd)/src/main.log"  # Update log file path if desired
 
-# Get the absolute path of the current project directory.
-PROJECT_DIR="$(pwd)"
+# Create or update a cron job to run main.py every Monday at 1am
+echo "Setting up cron job to run main.py every Monday at 1am..."
+CRON_JOB="0 1 * * 1 $PYTHON_PATH $MAIN_PY >> $LOG_FILE 2>&1"
 
-# Absolute path to the Python interpreter inside the virtual environment.
-PYTHON="$PROJECT_DIR/venv/bin/python"
+# Check if the cron job already exists; if not, add it.
+(crontab -l 2>/dev/null | grep -F "$CRON_JOB") || (crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
 
-# Absolute path to your main.py script (adjust if your file is located elsewhere).
-MAIN_PY="$PROJECT_DIR/src/main.py"
+# Ensure the cron service is enabled and started.
+echo "Ensuring cron service is running..."
+sudo systemctl enable cron
+sudo systemctl start cron
 
-# Optional: absolute path to the log file for output.
-LOG_FILE="$PROJECT_DIR/src/main.log"
-
-# The cron job entry: run main.py every Monday at 1am.
-CRON_JOB="0 1 * * 1 $PYTHON $MAIN_PY >> $LOG_FILE 2>&1"
-
-# Check if the cron job is already installed.
-if crontab -l 2>/dev/null | grep -F "$CRON_JOB" > /dev/null; then
-    echo "Cron job already installed."
-    exit 0
-fi
-
-# Install the new cron job.
-( crontab -l 2>/dev/null; echo "$CRON_JOB" ) | crontab -
-
-echo "Cron job installed: main.py will run every Monday at 1am."
+echo "Setup complete. Your project is installed and the cron job has been scheduled."
