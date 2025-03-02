@@ -1,23 +1,26 @@
 #!/bin/bash
 # This script installs a cron job to run main.py every Monday at 1am.
 
-# Absolute path to your Python interpreter (adjust as needed)
-PYTHON="/usr/bin/python3"
+# Get the absolute path of the current project directory.
+PROJECT_DIR="$(pwd)"
 
-# Absolute path to your main.py (update to the correct location)
-MAIN_PY="/main.py"
+# Absolute path to the Python interpreter inside the virtual environment.
+PYTHON="$PROJECT_DIR/venv/bin/python"
 
-# Optional: log file for output (update path if desired)
-LOG_FILE="/main.log"
+# Absolute path to your main.py script (adjust if your file is located elsewhere).
+MAIN_PY="$PROJECT_DIR/src/main.py"
 
-# The cron job entry: run main.py every Monday at 1am
+# Optional: absolute path to the log file for output.
+LOG_FILE="$PROJECT_DIR/src/main.log"
+
+# The cron job entry: run main.py every Monday at 1am.
 CRON_JOB="0 1 * * 1 $PYTHON $MAIN_PY >> $LOG_FILE 2>&1"
 
 # Check if the cron job is already installed.
-(crontab -l 2>/dev/null | grep -F "$CRON_JOB") && {
+if crontab -l 2>/dev/null | grep -F "$CRON_JOB" > /dev/null; then
     echo "Cron job already installed."
     exit 0
-}
+fi
 
 # Install the new cron job.
 ( crontab -l 2>/dev/null; echo "$CRON_JOB" ) | crontab -
