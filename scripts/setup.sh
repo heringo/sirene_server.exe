@@ -28,13 +28,13 @@ fi
 # If your project code is already on the VPS, make sure you're in the project folder:
 # cd /path/to/your/project
 
-# Upgrade pip and install Python dependencies from requirements.txt
-echo "Installing Python dependencies..."
+# Upgrade pip and install Python dependencies from requirements.txt in the root directory
+echo "Installing Python dependencies from the root directory..."
 pip3 install --upgrade pip
-if [ -f requirements.txt ]; then
-    pip3 install -r requirements.txt
+if [ -f ../requirements.txt ]; then
+    pip3 install -r ../requirements.txt
 else
-    echo "requirements.txt not found. Please ensure it is in your project directory."
+    echo "requirements.txt not found in the root directory. Please ensure it is in your project directory."
     exit 1
 fi
 
