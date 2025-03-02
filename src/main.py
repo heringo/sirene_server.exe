@@ -1,10 +1,14 @@
 import os 
 import pandas as pd
 import concurrent.futures
+from dotenv import load_dotenv
 from fetch_siren import fetch_lastweek_multi_naf_siege_fields
 from pappers_search import pappers_search
 from linkedin_search import linkedin_search
 from to_gsheet import send_df_to_gsheet
+
+# Charger les variables d'environnement depuis le fichier .env dans le dossier config
+load_dotenv(os.path.join(os.path.dirname(__file__), '../config/.env'))
 
 MAX_WORKERS = 2  # Maximum number of parallel agents
 
@@ -52,8 +56,8 @@ def main():
     print(df_final.head())
 
     # Save final results to CSV
-    df_final.to_csv("final_results.csv", index=False)
-    print("Final results saved to 'final_results.csv'.")
+    df_final.to_csv("data/final_results.csv", index=False)
+    print("Final results saved to 'data/final_results.csv'.")
 
     # Step 3: Send the final DataFrame to a new worksheet in Google Sheets
     WORKSHEET_NAME = "Sheet1"  # Base worksheet name; a unique sheet will be created
