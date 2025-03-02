@@ -5,9 +5,9 @@ set -e
 echo "Updating system packages..."
 sudo apt-get update && sudo apt-get upgrade -y
 
-# Install essential system packages
+# Install essential system packages (including python3-venv)
 echo "Installing Python3, pip, git, cron and other essentials..."
-sudo apt-get install -y python3 python3-pip git cron wget curl unzip
+sudo apt-get install -y python3 python3-pip python3-venv git cron wget curl unzip
 
 # Install Google Chrome if not already installed
 if ! command -v google-chrome &>/dev/null; then
@@ -25,29 +25,42 @@ fi
 # git clone https://your-repo-url.git /opt/myproject
 # cd /opt/myproject
 
-# If your project code is already on the VPS, make sure you're in the project folder:
+# Ensure you are in your project directory.
 # cd /path/to/your/project
 
-# Upgrade pip and install Python dependencies from requirements.txt in the root directory
-echo "Installing Python dependencies from the root directory..."
-pip3 install --upgrade pip
-if [ -f ../requirements.txt ]; then
-    pip3 install -r ../requirements.txt
+# Create a virtual environment if it does not exist
+VENV_DIR="./venv"
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating virtual environment in $VENV_DIR..."
+    python3 -m venv "$VENV_DIR"
+fi
+
+# Activate the virtual environment
+source "$VENV_DIR/bin/activate"
+
+# Upgrade pip inside the virtual environment
+echo "Upgrading pip in the virtual environment..."
+pip install --upgrade pip
+
+# Install Python dependencies from requirements.txt in the project root
+echo "Installing Python dependencies from requirements.txt..."
+if [ -f requirements.txt ]; then
+    pip install -r requirements.txt
 else
-    echo "requirements.txt not found in the root directory. Please ensure it is in your project directory."
+    echo "requirements.txt not found in the current directory. Please ensure it is in your project directory."
     exit 1
 fi
 
-# Create or update a cron job to run main.py every Monday at 1am
-# Define the full paths to your Python interpreter and main.py.
-PYTHON_PATH="$(which python3)"
-MAIN_PY="./../src/main.py"  # Update this with the absolute path to your main.py file
-LOG_FILE="./../src/main.log"  # Update this log file path if desired
+# Define the full paths to your Python interpreter (from the virtual environment) and main.py.
+PYTHON_PATH="$(pwd)/venv/bin/python"
+MAIN_PY="$(pwd)/src/main.py"   # Update if your main.py is in a different location
+LOG_FILE="$(pwd)/src/main.log"  # Update log file path if desired
 
+# Create or update a cron job to run main.py every Monday at 1am
 echo "Setting up cron job to run main.py every Monday at 1am..."
 CRON_JOB="0 1 * * 1 $PYTHON_PATH $MAIN_PY >> $LOG_FILE 2>&1"
 
-# Check if the cron job already exists and add it if not.
+# Check if the cron job already exists; if not, add it.
 (crontab -l 2>/dev/null | grep -F "$CRON_JOB") || (crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
 
 # Ensure the cron service is enabled and started.
