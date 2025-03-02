@@ -41,8 +41,8 @@ fi
 # Create or update a cron job to run main.py every Monday at 1am
 # Define the full paths to your Python interpreter and main.py.
 PYTHON_PATH="$(which python3)"
-MAIN_PY="/full/path/to/main.py"  # Update this with the absolute path to your main.py file
-LOG_FILE="/full/path/to/main.log"  # Update this log file path if desired
+MAIN_PY="./../src/main.py"  # Update this with the absolute path to your main.py file
+LOG_FILE="./../src/main.log"  # Update this log file path if desired
 
 echo "Setting up cron job to run main.py every Monday at 1am..."
 CRON_JOB="0 1 * * 1 $PYTHON_PATH $MAIN_PY >> $LOG_FILE 2>&1"
