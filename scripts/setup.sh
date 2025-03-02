@@ -45,7 +45,7 @@ pip install --upgrade pip
 # Install Python dependencies from requirements.txt in the project root
 echo "Installing Python dependencies from requirements.txt..."
 if [ -f requirements.txt ]; then
-    pip install -r ./../requirements.txt
+    pip install -r requirements.txt
 else
     echo "requirements.txt not found in the current directory. Please ensure it is in your project directory."
     exit 1
