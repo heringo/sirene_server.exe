@@ -18,7 +18,7 @@ def send_df_to_gsheet(df, spreadsheet_id, worksheet_name):
     scopes = ['https://www.googleapis.com/auth/spreadsheets',
               'https://www.googleapis.com/auth/drive']
     
-    credentials = Credentials.from_service_account_file("service_account.json", scopes=scopes)
+    credentials = Credentials.from_service_account_file("./config/service_account.json", scopes=scopes)
     client = gspread.authorize(credentials)
     
     sheet = client.open_by_key(spreadsheet_id)
