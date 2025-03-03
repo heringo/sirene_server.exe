@@ -16,6 +16,8 @@ load_dotenv()
 
 EMAIL = os.environ.get("EMAIL")
 PASSWORD = os.environ.get("PASSWORD")
+# Optional: set HEADLESS to "true" or "false" in your .env file.
+HEADLESS = os.environ.get("HEADLESS", "true").lower() == "true"
 
 if not EMAIL or not PASSWORD:
     raise ValueError("Please set the EMAIL and PASSWORD environment variables in your .env file.")
@@ -27,17 +29,20 @@ def linkedin_search(input_df):
     found for each owner.
     If no owner names are provided, the research is skipped.
     """
-    # Set up the Chrome driver in headless mode.
+    # Set up the Chrome driver with options adjusted for Linux VPS.
     service = Service(ChromeDriverManager().install())
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # Headless mode activated.
+    if HEADLESS:
+        options.add_argument("--headless")  # Activate headless mode if enabled.
+    options.add_argument("window-size=1920,1080")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    
     driver = webdriver.Chrome(service=service, options=options)
     
     # Login to LinkedIn with extra delays.
     driver.get("https://www.linkedin.com/login")
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
+    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "username")))
     driver.find_element(By.ID, "username").send_keys(EMAIL)
     time.sleep(random.uniform(1, 2))
     driver.find_element(By.ID, "password").send_keys(PASSWORD)
@@ -46,7 +51,7 @@ def linkedin_search(input_df):
     time.sleep(random.uniform(3, 5))
     
     # Wait for the search bar on the homepage to be available.
-    WebDriverWait(driver, 10).until(
+    WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[contains(@placeholder, 'Search')]"))
     )
     
@@ -76,7 +81,7 @@ def linkedin_search(input_df):
                 time.sleep(random.uniform(1, 2))
                 
                 # Wait for the search results page to load.
-                WebDriverWait(driver, 10).until(
+                WebDriverWait(driver, 20).until(
                     EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'search-results-container')]"))
                 )
                 time.sleep(random.uniform(1, 2))
@@ -90,7 +95,7 @@ def linkedin_search(input_df):
                     print(f"People tab not found for {name}: {e}")
                 
                 # Wait for people results to load.
-                WebDriverWait(driver, 10).until(
+                WebDriverWait(driver, 20).until(
                     EC.presence_of_element_located((By.XPATH, "//a[@data-test-app-aware-link and contains(@href, '/in/')]"))
                 )
                 time.sleep(random.uniform(0.5, 1.5))
@@ -124,5 +129,4 @@ if __name__ == "__main__":
     df_input = pd.DataFrame(data)
     
     # Search LinkedIn for the provided owner names.
-    df_output = linkedin_search(df_input)
-    print(df_output)
+   
